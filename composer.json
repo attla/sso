@@ -1,0 +1,37 @@
+{
+    "name": "attla/sso",
+    "description": "SSO authentication",
+    "keywords": [
+        "attla",
+        "sso",
+        "same-sign-on",
+        "authentication"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lucas Nicolau",
+            "email": "lucas@octha.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.3",
+        "attla/ulid": "^1.2.0",
+        "attla/permission": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Attla\\SSO\\": "src/",
+            "Attla\\SSO\\Database\\Seeds\\": "database/seeds/"
+        }
+    },
+    "extra": {
+        "attla": {
+            "providers": [
+                "Attla\\Permission\\ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
