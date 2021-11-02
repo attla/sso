@@ -28,7 +28,7 @@
     "extra": {
         "attla": {
             "providers": [
-                "Attla\\Permission\\ServiceProvider"
+                "Attla\\SSO\\ServiceProvider"
             ]
         }
     },
