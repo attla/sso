@@ -13,13 +13,27 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot()
     {
+        $configPath = __DIR__ . '/../config/sso.php';
+        $this->publishes([
+            $configPath => $this->app->configPath('sso.php'),
+        ], 'attla/sso/config');
+
+        $this->mergeConfigFrom(
+            $configPath,
+            'sso'
+        );
+
+        $config = $this->app['config'];
+
         // Migrations
         $migrationsPath = __DIR__ . '/../database/migrations';
         $this->publishes([
             $migrationsPath => $this->app->databasePath('migrations'),
         ], 'attla/sso/migrations');
 
-        $this->loadMigrationsFrom($migrationsPath);
+        if ($config->get('sso.mode') == 'server') {
+            $this->loadMigrationsFrom($migrationsPath);
+        }
 
         // Seeders
         // $this->publishes([
