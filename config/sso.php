@@ -1,6 +1,6 @@
 <?php
 
-$config = [
+$ssoConfig = [
     // accepted modes are 'client' or 'server'
     'mode'              => 'client',
     'server'            => 'http://localhost/',
@@ -46,10 +46,10 @@ $config = [
 ];
 
 $routes = [];
-foreach ($config['route-uri'] as $name => $uri) {
-    $routes[$name] = $config['server'] . $uri;
+foreach ($ssoConfig['route-uri'] as $name => $uri) {
+    $routes[$name] = $ssoConfig['server'] . $uri;
 }
 
-$config['route'] = $routes;
+$ssoConfig['route'] = $routes;
 
-return $config;
+return $ssoConfig;

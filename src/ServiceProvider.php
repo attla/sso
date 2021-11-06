@@ -45,6 +45,7 @@ class ServiceProvider extends BaseServiceProvider
             $migrationsPath => $this->app->databasePath('migrations'),
         ], 'attla/sso/migrations');
 
+        $config = $this->app['config'];
         if ($config->get('sso.mode') == 'server') {
             $this->loadMigrationsFrom($migrationsPath);
         }
