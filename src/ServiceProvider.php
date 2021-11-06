@@ -7,23 +7,37 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 class ServiceProvider extends BaseServiceProvider
 {
     /**
+     * Register the service provider
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->mergeConfigFrom($this->configPath(), 'sso');
+        $this->registerNamespaces();
+
+        $config = $this->app['config'];
+        $mode = $config->get('sso.mode', 'client');
+
+        if ($mode === 'server') {
+            $this->loadRoutesFrom(__DIR__ . '/routes.php');
+        }
+        // if (in_array($mode, ['client', 'server'])) {
+        //     $this->loadRoutesFrom(__DIR__ . "/routes/$mode.php");
+        // }
+    }
+
+    /**
      * Bootstrap the application events
      *
      * @return void
      */
     public function boot()
     {
-        $configPath = __DIR__ . '/../config/sso.php';
+        // Config
         $this->publishes([
-            $configPath => $this->app->configPath('sso.php'),
+            $this->configPath() => $this->app->configPath('sso.php'),
         ], 'attla/sso/config');
-
-        $this->mergeConfigFrom(
-            $configPath,
-            'sso'
-        );
-
-        $config = $this->app['config'];
 
         // Migrations
         $migrationsPath = __DIR__ . '/../database/migrations';
@@ -49,5 +63,31 @@ class ServiceProvider extends BaseServiceProvider
         // $this->publishes([
         //     __DIR__ . '/../stubs/Middlewares' => $this->app->path('Http/Middleware'),
         // ], 'attla/sso/middlewares');
+    }
+
+    /**
+     * Check if the application is in debug mode
+     *
+     * @param bool
+     */
+    protected function configPath()
+    {
+        return __DIR__ . '/../config/sso.php';
+    }
+
+    /**
+     * Set Attla view namespaces
+     *
+     * @return void
+     */
+    private function registerNamespaces()
+    {
+        $this->app['view']->addNamespace('sso', collect($this->app['config']['view.paths'])->map(function ($path) {
+            if (is_dir($flashPath = "$path/sso")) {
+                return $flashPath;
+            }
+        })->filter()
+        ->push(__DIR__ . '/../views')
+        ->all());
     }
 }
