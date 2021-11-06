@@ -7,7 +7,7 @@ app('router')->group(app('config')->get('sso.route-group', []), function ($route
         'uses' => 'AuthController@login',
         'as' => 'login',
     ]);
-    $router->get('/' . $routeUri['sign'] . '/{token?}', [
+    $router->post('/' . $routeUri['login'] . '/{token?}', [
         'uses' => 'AuthController@sign',
         'as' => 'sign',
     ]);
@@ -16,7 +16,7 @@ app('router')->group(app('config')->get('sso.route-group', []), function ($route
         'uses' => 'AuthController@register',
         'as' => 'register',
     ]);
-    $router->get('/' . $routeUri['signup'] . '/{token?}', [
+    $router->post('/' . $routeUri['register'] . '/{token?}', [
         'uses' => 'AuthController@signup',
         'as' => 'signup',
     ]);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Attla\SSO\Controllers;
 
 use App\Models\User;
 use Attla\Controller;
@@ -15,7 +15,7 @@ class AuthController extends Controller
 
         if ($user = auth()->user()) {
             $url = Resolver::callback($token, $user);
-            return view('sso::identifier', compact('token', 'url'));
+            return view('sso::identifier', compact('user', 'token', 'url'));
         }
 
         return redirect()->route('sso.login', [
@@ -64,7 +64,7 @@ class AuthController extends Controller
 
         $user = new User($request->only(array_keys($inputs)));
 
-        if ($create = $user->save()) {
+        if ($user->save()) {
             auth()->fromUser($user, 31556926);
             $callback = Resolver::callback($token, auth()->user()) ?: route(config('sso.redirect'));
             flash("Seja bem-vindo, {$user->name}!");

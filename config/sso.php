@@ -7,9 +7,7 @@ $config = [
     'route-uri' => [
         'identifier'    => 'identifier',// identifies if the user is logged in and handles the return
         'login'         => 'login',     // login page
-        'sign'          => 'sign',      // internal route to verify credentials of login
         'register'      => 'register',  // register page
-        'signup'        => 'signup',    // internal route to register credentials of login
         'logout'        => 'logout',    // logout route
     ],
     // for server mode only
@@ -33,7 +31,18 @@ $config = [
             'password'  => 'required|min:5',
             'password_confirmation' => 'required|min:5|same:password',
         ],
-    ]
+    ],
+    'seo' => [
+        'keywords'      => '',
+        ''              => '',
+        ''              => '',
+        ''              => '',
+        ''              => '',
+        ''              => '',
+        ''              => '',
+        ''              => '',
+        ''              => '',
+    ],
 ];
 
 $routes = [];
