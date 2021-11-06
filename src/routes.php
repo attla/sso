@@ -3,6 +3,11 @@
 app('router')->group(app('config')->get('sso.route-group', []), function ($router) {
     $routeUri = app('config')->get('sso.route-uri');
 
+    $router->get('/' . $routeUri['identifier'], [
+        'uses' => 'AuthController@identifier',
+        'as' => 'identifier',
+    ]);
+
     $router->get('/' . $routeUri['login'] . '/{token?}', [
         'uses' => 'AuthController@login',
         'as' => 'login',
