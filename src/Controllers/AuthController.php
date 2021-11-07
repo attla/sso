@@ -18,7 +18,7 @@ class AuthController extends Controller
             return view('sso::identifier', compact('user', 'token', 'url'));
         }
 
-        return redirect()->route('sso.login', [
+        return redirect()->route(config('sso.route-group.as') . 'login', [
             'token' => $token,
         ]);
     }
@@ -57,7 +57,7 @@ class AuthController extends Controller
     public function register(Request $request, $token = null)
     {
         if (!$token and $token = Resolver::getClientProviderToken($request)) {
-            return redirect()->route('sso.register', [
+            return redirect()->route(config('sso.route-group.as') . 'register', [
                 'token' => $token,
             ]);
         }
