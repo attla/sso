@@ -11,7 +11,7 @@ class AuthController extends Controller
 {
     public function identifier(Request $request)
     {
-        [$clientCallback, $clientSecret, $token] = Resolver::resolveClientProvider($request);
+        $token = Resolver::getClientProviderToken($request);
 
         if ($user = auth()->user()) {
             $url = Resolver::callback($token, $user);
@@ -47,13 +47,16 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        [$clientCallback] = Resolver::resolveClientProvider($request);
-        return redirect($clientCallback ?? '/');
+        if (Resolver::isClientProvider($request->client)) {
+            return redirect($request->client);
+        }
+
+        return redirect('/');
     }
 
     public function register(Request $request)
     {
-        [$clientCallback, $clientSecret, $token] = Resolver::resolveClientProvider($request);
+        $token = Resolver::getClientProviderToken($request);
         return view('sso::register', compact('token'));
     }
 
