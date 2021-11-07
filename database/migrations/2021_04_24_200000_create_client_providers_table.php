@@ -17,6 +17,7 @@ class CreateClientProvidersTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('host')->unique();
+            $table->string('callback')->unique();
             $table->string('secret');
             $table->timestamps();
         });
