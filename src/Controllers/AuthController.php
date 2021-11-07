@@ -62,7 +62,7 @@ class AuthController extends Controller
             ]);
         }
 
-        return view('sso::register');
+        return view('sso::register', compact('token'));
     }
 
     public function signup(Request $request, $token = null)
