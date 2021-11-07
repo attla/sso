@@ -39,6 +39,12 @@ class ServiceProvider extends BaseServiceProvider
             $this->configPath() => $this->app->configPath('sso.php'),
         ], 'attla/sso/config');
 
+        // Views
+        $viewsPath = __DIR__ . '/../views';
+        $this->publishes([
+            $viewsPath => $this->app->resourcePath('views/sso'),
+        ], 'attla/sso/views');
+
         // Migrations
         $migrationsPath = __DIR__ . '/../database/migrations';
         $this->publishes([
