@@ -14,7 +14,7 @@ class AuthController extends Controller
         $token = Resolver::getClientProviderToken($request);
 
         if ($user = auth()->user()) {
-            $callback = Resolver::callback($token, $user);
+            $callback = Resolver::callback($token, $user) ?: route(config('sso.redirect'));
             return view('sso::identifier', compact('user', 'token', 'callback'));
         }
 
