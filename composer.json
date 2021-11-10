@@ -1,6 +1,6 @@
 {
     "name": "attla/sso-server",
-    "description": "SSO authentication",
+    "description": "SSO authentication server",
     "keywords": [
         "attla",
         "sso",
