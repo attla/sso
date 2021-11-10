@@ -3,6 +3,7 @@
 namespace Attla\SSO\Models;
 
 use Attla\Database\Eloquent;
+use Attla\Permission\Models\PermissionGroup;
 
 class ClientProvider extends Eloquent
 {
@@ -10,6 +11,7 @@ class ClientProvider extends Eloquent
         'name',
         'host',
         'callback',
+        'secret',
     ];
 
     public $timestamps = true;

@@ -15,16 +15,7 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->mergeConfigFrom($this->configPath(), 'sso');
         $this->registerNamespaces();
-
-        $config = $this->app['config'];
-        $mode = $config->get('sso.mode', 'client');
-
-        if ($mode === 'server') {
-            $this->loadRoutesFrom(__DIR__ . '/routes.php');
-        }
-        // if (in_array($mode, ['client', 'server'])) {
-        //     $this->loadRoutesFrom(__DIR__ . "/routes/$mode.php");
-        // }
+        $this->loadRoutesFrom(__DIR__ . '/routes.php');
     }
 
     /**
@@ -50,30 +41,11 @@ class ServiceProvider extends BaseServiceProvider
         $this->publishes([
             $migrationsPath => $this->app->databasePath('migrations'),
         ], 'attla/sso/migrations');
-
-        $config = $this->app['config'];
-        if ($config->get('sso.mode') == 'server') {
-            $this->loadMigrationsFrom($migrationsPath);
-        }
-
-        // Seeders
-        // $this->publishes([
-        //     __DIR__ . '/../stubs/seeds' => $this->app->databasePath('seeders'),
-        // ], 'attla/sso/seeds');
-
-        //Models
-        // $this->publishes([
-        //     __DIR__ . '/../stubs/Models' => $this->app->path('Models'),
-        // ], 'attla/sso/models');
-
-        //Models
-        // $this->publishes([
-        //     __DIR__ . '/../stubs/Middlewares' => $this->app->path('Http/Middleware'),
-        // ], 'attla/sso/middlewares');
+        $this->loadMigrationsFrom($migrationsPath);
     }
 
     /**
-     * Check if the application is in debug mode
+     * Get config path
      *
      * @param bool
      */

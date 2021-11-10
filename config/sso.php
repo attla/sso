@@ -1,16 +1,12 @@
 <?php
 
-$ssoConfig = [
-    // accepted modes are 'client' or 'server'
-    'mode'              => 'client',
-    'server'            => 'http://localhost/',
+return [
     'route-uri' => [
         'identifier'    => 'identifier',// identifies if the user is logged in and handles the return
         'login'         => 'login',     // login page
         'register'      => 'register',  // register page
         'logout'        => 'logout',    // logout route
     ],
-    // for server mode only
     'redirect'          => 'hub.dashboard',
     'route-group' => [
         'as'            => 'sso.',
@@ -32,24 +28,4 @@ $ssoConfig = [
             'password_confirmation' => 'required|min:5|same:password',
         ],
     ],
-    'seo' => [
-        'keywords'      => '',
-        ''              => '',
-        ''              => '',
-        ''              => '',
-        ''              => '',
-        ''              => '',
-        ''              => '',
-        ''              => '',
-        ''              => '',
-    ],
 ];
-
-$routes = [];
-foreach ($ssoConfig['route-uri'] as $name => $uri) {
-    $routes[$name] = $ssoConfig['server'] . $uri;
-}
-
-$ssoConfig['route'] = $routes;
-
-return $ssoConfig;
