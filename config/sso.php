@@ -2,10 +2,14 @@
 
 return [
     'route-uri' => [
-        'identifier'    => 'identifier',// identifies if the user is logged in and handles the return
-        'login'         => 'login',     // login page
-        'register'      => 'register',  // register page
-        'logout'        => 'logout',    // logout route
+        // identifies if the user is logged in and handles the return
+        'identifier'    => 'identifier',
+        // login page
+        'login'         => 'login',
+        // register page
+        'register'      => 'register',
+        // logout route
+        'logout'        => 'logout',
     ],
     'redirect'          => 'hub.dashboard',
     'route-group' => [
