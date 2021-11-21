@@ -3,7 +3,6 @@
 namespace Attla\SSO\Models;
 
 use Attla\Database\Eloquent;
-use Attla\Permission\Models\PermissionGroup;
 
 class ClientProvider extends Eloquent
 {
@@ -15,12 +14,4 @@ class ClientProvider extends Eloquent
     ];
 
     public $timestamps = true;
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function groups()
-    {
-        return $this->hasMany(PermissionGroup::class);
-    }
 }
