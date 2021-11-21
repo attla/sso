@@ -11,13 +11,27 @@ return [
         // logout route
         'logout'        => 'logout',
     ],
-    'redirect'          => 'hub.dashboard',
+    'redirect'          => 'dashboard',
     'route-group' => [
         'as'            => 'sso.',
         'prefix'        => '/sso',
         'namespace'     => 'Attla\\SSO\\Controllers',
         'middleware'    => [
             'web',
+        ],
+    ],
+    'middlewares' => [
+        'identifier' => [
+            //
+        ],
+        'login' => [
+            //
+        ],
+        'register' => [
+            //
+        ],
+        'logout' => [
+            //
         ],
     ],
     'validation' => [
