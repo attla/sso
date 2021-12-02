@@ -10,24 +10,13 @@ use Illuminate\Contracts\Auth\Authenticatable;
 class Resolver extends \Attla\Encrypter
 {
     /**
-     * Detect if client provider exists
-     *
-     * @param string $clientProviderHost
-     * @return bool
-     */
-    public static function isClientProvider($clientProviderHost)
-    {
-        return ClientProvider::where('host', static::host($clientProviderHost))->exists();
-    }
-
-    /**
      * Detect the provider from request
      *
      * @return ClientProvider|false
      */
     public static function resolveClientProvider(Request $request)
     {
-        $host = static::host($request->header('referer'));
+        $host = static::host($request->header('referer') ?: $request->get('client'));
 
         if ($host and $clientProvider = ClientProvider::where('host', $host)->first()) {
             return $clientProvider;
@@ -42,12 +31,11 @@ class Resolver extends \Attla\Encrypter
      * @param string $host
      * @return string
      */
-    protected static function host($host)
+    public static function host($host)
     {
         $parseUrl = parse_url($host);
         $host = '';
 
-        !empty($parseUrl['scheme']) && $host .= $parseUrl['scheme'] . '://';
         !empty($parseUrl['host']) && $host .= $parseUrl['host'];
 
         return $host;
@@ -160,31 +148,5 @@ class Resolver extends \Attla\Encrypter
         }
 
         return $userData;
-    }
-
-    /**
-     * Get user from sso callback
-     *
-     * @param Request $request
-     * @return Authenticatable|false
-     */
-    public static function getUser(Request $request)
-    {
-        if ($data = static::jwtDecode($request->token)) {
-            return new User($data);
-        }
-
-        return false;
-    }
-
-    /**
-     * Make a sso logout
-     *
-     * @param Request $request
-     * @return void
-     */
-    public static function logout(Request $request)
-    {
-        return redirect(config('sso.route.logout') . '?client=' . $request->root());
     }
 }

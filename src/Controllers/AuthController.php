@@ -47,8 +47,8 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        if (Resolver::isClientProvider($request->client)) {
-            return redirect($request->client);
+        if ($client = Resolver::resolveClientProvider($request)) {
+            return redirect($client->host);
         }
 
         return redirect('/');
@@ -71,6 +71,10 @@ class AuthController extends Controller
         $this->validate($request, $inputs);
 
         $user = new User($request->only(array_keys($inputs)));
+
+        $user->forceFill([
+            'password' => encrypt($request->input('password')),
+        ]);
 
         if ($user->save()) {
             auth()->fromUser($user, 31556926);
