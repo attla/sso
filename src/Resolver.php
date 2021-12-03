@@ -2,7 +2,7 @@
 
 namespace Attla\SSO;
 
-use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Attla\SSO\Models\ClientProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -33,6 +33,10 @@ class Resolver extends \Attla\Encrypter
      */
     public static function host($host)
     {
+        if (Str::start($host, 'http')) {
+            $host = 'http://' . $host;
+        }
+
         $parseUrl = parse_url($host);
         $host = '';
 
