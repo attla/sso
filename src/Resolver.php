@@ -33,7 +33,7 @@ class Resolver extends \Attla\Encrypter
      */
     public static function host($host)
     {
-        if (!Str::start($host, 'http')) {
+        if (!Str::startsWith($host, 'http')) {
             $host = 'http://' . $host;
         }
 
