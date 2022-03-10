@@ -72,7 +72,7 @@ class Resolver extends \Attla\Encrypter
      */
     protected static function token(array $credentials)
     {
-        return static::sign($credentials, 7200);
+        return \Jwt::sign($credentials, 7200);
     }
 
     /**
@@ -100,7 +100,7 @@ class Resolver extends \Attla\Encrypter
      */
     public static function callback($token, Authenticatable $user)
     {
-        $token = static::jwtDecode($token);
+        $token = \Jwt::decode($token);
 
         if (
             !$token
@@ -122,35 +122,19 @@ class Resolver extends \Attla\Encrypter
      */
     protected static function userToken(Authenticatable $user, string $clientSecret)
     {
-        $key = static::generateKey(5);
+        $config = config();
+        $oldSecret = $config->get('encrypt.secret');
+        $config->set('encrypt.secret', $clientSecret);
 
-        $payload = static::encode(static::formatUser($user), $key);
-        $header = static::encode([
-            'k' => $key,
-        ], $clientSecret);
-        $signature = static::encode(md5($header . $payload, true), $clientSecret);
-
-        return $header . '_' . $payload . '_' . $signature;
-    }
-
-    /**
-     * Format user data
-     *
-     * @param Authenticatable $user
-     * @return array
-     */
-    protected static function formatUser(Authenticatable $user)
-    {
-        $userData = $user->toArray();
+        $user = $user->toArray();
 
         if (!empty($userData['password'])) {
             unset($userData['password']);
         }
 
-        if (!empty($userData['encoded_id'])) {
-            unset($userData['encoded_id']);
-        }
+        $token = \Jwt::encode($user);
+        $config->set('encrypt.secret', $oldSecret);
 
-        return $userData;
+        return $token;
     }
 }
