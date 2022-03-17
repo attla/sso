@@ -2,7 +2,6 @@
 
 namespace Attla\SSO\Middlewares;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class Authorized
@@ -42,12 +41,12 @@ class Authorized
         list($controller, $method) = explode('@', $action);
         $controller = str_replace(['App\\Http\\Controllers\\', 'Controller'], '', $controller);
         $explodedControler = explode('\\', $controller);
-        $controller = Str::snake(end($explodedControler), '-');
+        $controller = \Str::snake(end($explodedControler), '-');
         $namespace = '';
         if (count($explodedControler) > 1) {
             $namespace = join('.', array_slice($explodedControler, 0, -1)) . '.';
         }
 
-        return $namespace . $controller . '.' . Str::snake($method, '-');
+        return $namespace . $controller . '.' . \Str::snake($method, '-');
     }
 }
