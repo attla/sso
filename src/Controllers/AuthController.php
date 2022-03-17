@@ -16,7 +16,12 @@ class AuthController extends Controller
 
         if ($user = auth()->user()) {
             $callback = Resolver::callback($token, $user, $redirect) ?: route(config('sso.redirect'));
-            return view('sso::identifier', compact('user', 'token', 'callback', 'redirect'));
+            return view('sso::identifier', compact(
+                'user',
+                'token',
+                'callback',
+                'redirect'
+            ));
         }
 
         return redirect()->route(config('sso.route-group.as') . 'login', [
@@ -25,21 +30,28 @@ class AuthController extends Controller
         ]);
     }
 
-    public function login($token = null)
+    public function login(Request $request)
     {
-        $redirect = request('redirect') ?: route(config('sso.redirect'));
+        $token = $request->token;
+        $redirect = $request->redirect ?: route(config('sso.redirect'));
         return view('sso::login', compact('token', 'redirect'));
     }
 
-    public function sign(Request $request, $token = null)
+    public function sign(Request $request)
     {
         $inputs = config('sso.validation.sign');
         $this->validate($request, $inputs);
 
         $remember = $request->has('remember') ? 31556926 : 1800;
+        $token = $request->token;
 
         if (auth()->attempt($request->only(array_keys($inputs)), $remember)) {
-            $callback = Resolver::callback($token, auth()->user(), $request->redirect ?: $request->r ?: route(config('sso.redirect'))) ?: route(config('sso.redirect'));
+            $callback = Resolver::callback(
+                $token,
+                auth()->user(),
+                $request->redirect ?: $request->r ?: route(config('sso.redirect'))
+            ) ?: route(config('sso.redirect'));
+
             return redirect($callback);
         }
 
@@ -57,8 +69,9 @@ class AuthController extends Controller
         return redirect('/');
     }
 
-    public function register(Request $request, $token = null)
+    public function register(Request $request)
     {
+        $token = $request->token;
         $redirect = $request->redirect ?: $request->r ?: route(config('sso.redirect'));
 
         if (!$token and $token = Resolver::getClientProviderToken($request)) {
@@ -71,11 +84,12 @@ class AuthController extends Controller
         return view('sso::register', compact('token', 'redirect'));
     }
 
-    public function signup(Request $request, $token = null)
+    public function signup(Request $request)
     {
         $inputs = config('sso.validation.signup');
         $this->validate($request, $inputs);
 
+        $token = $request->token;
         $user = new User($request->only(array_keys($inputs)));
 
         $user->forceFill([
@@ -84,7 +98,11 @@ class AuthController extends Controller
 
         if ($user->save()) {
             auth()->fromUser($user, 31556926);
-            $callback = Resolver::callback($token, auth()->user(), $request->redirect ?: $request->r ?: route(config('sso.redirect'))) ?: route(config('sso.redirect'));
+            $callback = Resolver::callback(
+                $token,
+                auth()->user(),
+                $request->redirect ?: $request->r ?: route(config('sso.redirect'))
+            ) ?: route(config('sso.redirect'));
             flash("Seja bem-vindo, {$user->name}!");
 
             return redirect($callback);
