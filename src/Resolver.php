@@ -2,7 +2,6 @@
 
 namespace Attla\SSO;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Attla\SSO\Models\ClientProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -33,7 +32,7 @@ class Resolver extends \Attla\Encrypter
      */
     public static function host($host)
     {
-        if (!Str::startsWith($host, 'http')) {
+        if (!\Str::startsWith($host, 'http')) {
             $host = 'http://' . $host;
         }
 
@@ -98,7 +97,7 @@ class Resolver extends \Attla\Encrypter
      * @param Authenticatable $user
      * @return string
      */
-    public static function callback($token, Authenticatable $user)
+    public static function callback($token, Authenticatable $user, string $redirect = '')
     {
         $token = \Jwt::decode($token);
 
@@ -110,7 +109,9 @@ class Resolver extends \Attla\Encrypter
             return false;
         }
 
-        return rtrim($token->callback, '/') . '?token=' . static::userToken($user, $token->secret);
+        return rtrim($token->callback, '/')
+            . '?token=' . static::userToken($user, $token->secret)
+            . '&redirect=' . $redirect;
     }
 
     /**
