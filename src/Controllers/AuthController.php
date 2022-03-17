@@ -24,7 +24,7 @@ class AuthController extends Controller
             ));
         }
 
-        return redirect()->route(config('sso.route-group.as') . 'login', [
+        return to_route(config('sso.route-group.as') . 'login', [
             'token' => $token,
             'redirect' => $redirect,
         ]);
@@ -75,7 +75,7 @@ class AuthController extends Controller
         $redirect = $request->redirect ?: $request->r ?: route(config('sso.redirect'));
 
         if (!$token and $token = Resolver::getClientProviderToken($request)) {
-            return redirect()->route(config('sso.route-group.as') . 'register', [
+            return to_route(config('sso.route-group.as') . 'register', [
                 'token' => $token,
                 'redirect' => $redirect,
             ]);
