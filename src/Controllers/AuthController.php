@@ -14,7 +14,7 @@ class AuthController extends Controller
         $token = Resolver::getClientProviderToken($request);
         $redirect = $request->redirect ?: $request->r ?: route(config('sso.redirect'));
 
-        if ($user = auth()->user()) {
+        if ($user = \Auth::user()) {
             $callback = Resolver::callback($token, $user, $redirect) ?: route(config('sso.redirect'));
             return view('sso::identifier', compact(
                 'user',
@@ -45,10 +45,10 @@ class AuthController extends Controller
         $remember = $request->has('remember') ? 31556926 : 1800;
         $token = $request->token;
 
-        if (auth()->attempt($request->only(array_keys($inputs)), $remember)) {
+        if (\Auth::attempt($request->only(array_keys($inputs)), $remember)) {
             $callback = Resolver::callback(
                 $token,
-                auth()->user(),
+                \Auth::user(),
                 $request->redirect ?: $request->r ?: route(config('sso.redirect'))
             ) ?: route(config('sso.redirect'));
 
@@ -60,7 +60,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        auth()->logout();
+        \Auth::logout();
 
         if ($client = Resolver::resolveClientProvider($request)) {
             return redirect($client->host);
@@ -97,10 +97,10 @@ class AuthController extends Controller
         ]);
 
         if ($user->save()) {
-            auth()->fromUser($user, 31556926);
+            \Auth::fromUser($user, 31556926);
             $callback = Resolver::callback(
                 $token,
-                auth()->user(),
+                \Auth::user(),
                 $request->redirect ?: $request->r ?: route(config('sso.redirect'))
             ) ?: route(config('sso.redirect'));
             flash("Seja bem-vindo, {$user->name}!");
