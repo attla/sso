@@ -16,6 +16,7 @@ return [
         'as'            => 'sso.',
         'prefix'        => '/sso',
         'namespace'     => 'Attla\\SSO\\Controllers',
+        'controller'    => 'AuthController',
         'middleware'    => [
             'web',
         ],
