@@ -15,7 +15,7 @@ class Resolver extends \Attla\Encrypter
      */
     public static function resolveClientProvider(Request $request)
     {
-        $host = static::host($request->header('referer') ?: $request->get('client'));
+        $host = static::host($request->header('referer') ?: $request->client);
 
         if ($host and $clientProvider = ClientProvider::where('host', $host)->first()) {
             return $clientProvider;
@@ -36,12 +36,7 @@ class Resolver extends \Attla\Encrypter
             $host = 'http://' . $host;
         }
 
-        $parseUrl = parse_url($host);
-        $host = '';
-
-        !empty($parseUrl['host']) && $host .= $parseUrl['host'];
-
-        return $host;
+        return parse_url($host, PHP_URL_HOST);
     }
 
     /**
@@ -71,7 +66,7 @@ class Resolver extends \Attla\Encrypter
      */
     protected static function token(array $credentials)
     {
-        return \Jwt::sign($credentials, 7200);
+        return \Jwt::sign($credentials, 120);
     }
 
     /**
