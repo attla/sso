@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Validation\Rules\Password;
+
 return [
     'route-uri' => [
         // identifies if the user is logged in and handles the return
@@ -43,8 +45,17 @@ return [
         'signup' => [
             'name'      => 'required',
             'email'     => 'required|email|unique:users,email',
-            'password'  => 'required|min:5',
-            'password_confirmation' => 'required|min:5|same:password',
+            'password'  => [
+                'required',
+                'different:email',
+                'confirmed',
+                Password::min(5)
+                    // ->mixedCase()
+                    // ->letters()
+                    // ->numbers()
+                    // ->symbols()
+                    ->uncompromised(),
+            ],
         ],
     ],
 ];
