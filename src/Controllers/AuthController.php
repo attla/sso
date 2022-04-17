@@ -42,7 +42,7 @@ class AuthController extends Controller
         $inputs = config('sso.validation.sign');
         $this->validate($request, $inputs);
 
-        $remember = $request->has('remember') ? 31556926 : 1800;
+        $remember = $request->has('remember') ? 525600 : 30;
         $token = $request->token;
 
         if (\Auth::attempt($request->only(array_keys($inputs)), $remember)) {
@@ -97,7 +97,7 @@ class AuthController extends Controller
         ]);
 
         if ($user->save()) {
-            \Auth::fromUser($user, 31556926);
+            \Auth::login($user, 525600);
             $callback = Resolver::callback(
                 $token,
                 \Auth::user(),
