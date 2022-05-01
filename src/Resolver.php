@@ -32,11 +32,18 @@ class Resolver extends \Attla\Encrypter
      */
     public static function host($host)
     {
-        if (!\Str::startsWith((string) $host, 'http')) {
-            $host = 'http://' . $host;
+        if (!$url) {
+            return null;
         }
 
-        return parse_url($host, PHP_URL_HOST);
+        $url = (string) $url;
+        if (!\Str::startsWith($url, 'http')) {
+            $url = 'http://' . $url;
+        }
+
+        $port = parse_url($url, PHP_URL_PORT);
+
+        return parse_url($url, PHP_URL_HOST) . ($port ? ':' . $port : '');
     }
 
     /**
