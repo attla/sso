@@ -27,10 +27,10 @@ class Resolver extends \Attla\Encrypter
     /**
      * Format a referer host
      *
-     * @param string $host
+     * @param string $url
      * @return string
      */
-    public static function host($host)
+    public static function host($url)
     {
         if (!$url) {
             return null;
