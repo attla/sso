@@ -2,6 +2,8 @@
 
 namespace Attla\SSO;
 
+use Attla\Jwt;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Attla\SSO\Models\ClientProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -15,9 +17,13 @@ class Resolver extends \Attla\Encrypter
      */
     public static function resolveClientProvider(Request $request)
     {
-        $host = static::host($request->header('referer') ?: $request->client);
+        $clientHost = static::host($request->client ?: $request->header('referer'));
 
-        if ($host and $clientProvider = ClientProvider::where('host', $host)->first()) {
+        if (
+            $clientHost
+            and $clientHost != $_SERVER['HTTP_HOST']
+            and $clientProvider = ClientProvider::where('host', $clientHost)->first()
+        ) {
             return $clientProvider;
         }
 
@@ -37,7 +43,7 @@ class Resolver extends \Attla\Encrypter
         }
 
         $url = (string) $url;
-        if (!\Str::startsWith($url, 'http')) {
+        if (!Str::startsWith($url, 'http')) {
             $url = 'http://' . $url;
         }
 
@@ -56,40 +62,13 @@ class Resolver extends \Attla\Encrypter
         $clientProvider = static::resolveClientProvider($request);
 
         if ($clientProvider) {
-            return static::token([
+            return Jwt::sign([
                 'secret' => $clientProvider->secret,
                 'callback' => $clientProvider->callback,
-            ]);
+            ], 120);
         }
 
-        return false;
-    }
-
-    /**
-     * Create a sso sign token
-     *
-     * @param array $credentials
-     * @return string
-     */
-    protected static function token(array $credentials)
-    {
-        return \Jwt::sign($credentials, 120);
-    }
-
-    /**
-     * Get client provider callback
-     *
-     * @return array
-     */
-    public static function getClientProviderCallback(Request $request)
-    {
-        $clientProvider = static::resolveClientProvider($request);
-
-        if ($clientProvider) {
-            return $clientProvider->host;
-        }
-
-        return false;
+        return null;
     }
 
     /**
@@ -101,7 +80,7 @@ class Resolver extends \Attla\Encrypter
      */
     public static function callback($token, Authenticatable $user, string $redirect = '')
     {
-        $token = \Jwt::decode($token);
+        $token = Jwt::decode($token);
 
         if (
             !$token
@@ -112,32 +91,7 @@ class Resolver extends \Attla\Encrypter
         }
 
         return rtrim($token->callback, '/')
-            . '?token=' . static::userToken($user, $token->secret)
+            . '?token=' . Jwt::id($user->toArray(), $token->secret)
             . '&redirect=' . $redirect;
-    }
-
-    /**
-     * Create a sso user token
-     *
-     * @param Authenticatable $user
-     * @param string $clientSecret
-     * @return string
-     */
-    protected static function userToken(Authenticatable $user, string $clientSecret)
-    {
-        $config = config();
-        $oldSecret = $config->get('encrypt.secret');
-        $config->set('encrypt.secret', $clientSecret);
-
-        $user = $user->toArray();
-
-        if (!empty($userData['password'])) {
-            unset($userData['password']);
-        }
-
-        $token = \Jwt::encode($user);
-        $config->set('encrypt.secret', $oldSecret);
-
-        return $token;
     }
 }
