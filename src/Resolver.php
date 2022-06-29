@@ -62,10 +62,10 @@ class Resolver extends \Attla\Encrypter
         $clientProvider = static::resolveClientProvider($request);
 
         if ($clientProvider) {
-            return Jwt::sign([
+            return Jwt::payload([
                 'secret' => $clientProvider->secret,
                 'callback' => $clientProvider->callback,
-            ], 120);
+            ])->sign(120);
         }
 
         return null;
@@ -91,7 +91,8 @@ class Resolver extends \Attla\Encrypter
         }
 
         return rtrim($token->callback, '/')
-            . '?token=' . Jwt::id($user->toArray(), $token->secret)
+            . '?token=' . Jwt::secret($token->secret)
+                ->id($user->toArray())
             . '&redirect=' . $redirect;
     }
 }
