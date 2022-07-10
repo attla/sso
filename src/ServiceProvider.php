@@ -14,7 +14,6 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom($this->configPath(), 'sso');
-        $this->registerNamespaces();
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
     }
 
@@ -25,6 +24,8 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot()
     {
+        $this->registerNamespaces();
+
         // Config
         $this->publishes([
             $this->configPath() => $this->app->configPath('sso.php'),
