@@ -15,9 +15,10 @@
         }
     ],
     "require": {
-        "php": ">=7.3",
+        "php": ">=7.2.5",
         "attla/ulid": "^1.2.0",
-        "attla/permission": "dev-main"
+        "attla/permission": "dev-main",
+        "attla/data-token": "dev-main"
     },
     "autoload": {
         "psr-4": {

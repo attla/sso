@@ -2,7 +2,6 @@
 
 namespace Attla\SSO;
 
-use Attla\Jwt;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Attla\SSO\Models\ClientProvider;
@@ -62,7 +61,7 @@ class Resolver extends \Attla\Encrypter
         $clientProvider = static::resolveClientProvider($request);
 
         if ($clientProvider) {
-            return Jwt::payload([
+            return \DataToken::payload([
                 'secret' => $clientProvider->secret,
                 'callback' => $clientProvider->callback,
             ])->sign(120);
@@ -80,7 +79,7 @@ class Resolver extends \Attla\Encrypter
      */
     public static function callback($token, Authenticatable $user, string $redirect = '')
     {
-        $token = Jwt::decode($token);
+        $token = \DataToken::decode($token);
 
         if (
             !$token
@@ -91,7 +90,7 @@ class Resolver extends \Attla\Encrypter
         }
 
         return rtrim($token->callback, '/')
-            . '?token=' . Jwt::secret($token->secret)
+            . '?token=' . \DataToken::secret($token->secret)
                 ->id($user->toArray())
             . '&redirect=' . $redirect;
     }
