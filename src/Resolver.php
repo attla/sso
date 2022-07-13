@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Attla\SSO\Models\ClientProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 
-class Resolver extends \Attla\Encrypter
+class Resolver
 {
     /**
      * Detect the provider from request
