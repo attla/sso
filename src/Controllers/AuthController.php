@@ -2,8 +2,8 @@
 
 namespace Attla\SSO\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
-use Attla\Controller;
 use Attla\SSO\Resolver;
 use Illuminate\Http\Request;
 

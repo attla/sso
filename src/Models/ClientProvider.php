@@ -2,9 +2,9 @@
 
 namespace Attla\SSO\Models;
 
-use Attla\Database\Eloquent;
+use Illuminate\Database\Eloquent\Model;
 
-class ClientProvider extends Eloquent
+class ClientProvider extends Model
 {
     protected $fillable = [
         'name',
