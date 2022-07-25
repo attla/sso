@@ -16,7 +16,7 @@
     ],
     "require": {
         "php": ">=7.2.5",
-        "attla/ulid": "^1.2.0",
+        "attla/ulid": "^1.2",
         "attla/permission": "dev-main",
         "attla/data-token": "dev-main"
     },
@@ -27,7 +27,7 @@
         }
     },
     "extra": {
-        "attla": {
+        "laravel": {
             "providers": [
                 "Attla\\SSO\\ServiceProvider"
             ]
