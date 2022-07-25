@@ -23,6 +23,14 @@ return [
             'web',
         ],
     ],
+    'route-alias' => [
+        'identifier'    => [
+            // 'alias-uri',
+        ],
+        'login'         => [],
+        'register'      => [],
+        'logout'        => [],
+    ],
     'middlewares' => [
         'identifier' => [
             //
@@ -54,7 +62,7 @@ return [
                     // ->letters()
                     // ->numbers()
                     // ->symbols()
-                    ->uncompromised(),
+                    // ->uncompromised(),
             ],
         ],
     ],
