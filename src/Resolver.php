@@ -2,10 +2,11 @@
 
 namespace Attla\SSO;
 
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
+use Attla\DataToken\Facade as DataToken;
 use Attla\SSO\Models\ClientProvider;
+use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Str;
 
 class Resolver
 {
@@ -61,10 +62,10 @@ class Resolver
         $clientProvider = static::resolveClientProvider($request);
 
         if ($clientProvider) {
-            return \DataToken::payload([
+            return DataToken::payload([
                 'secret' => $clientProvider->secret,
                 'callback' => $clientProvider->callback,
-            ])->sign(120);
+            ])->sign(120)->encode();
         }
 
         return null;
@@ -79,7 +80,7 @@ class Resolver
      */
     public static function callback($token, Authenticatable $user, string $redirect = '')
     {
-        $token = \DataToken::decode($token);
+        $token = DataToken::decode($token);
 
         if (
             !$token
@@ -90,7 +91,7 @@ class Resolver
         }
 
         return rtrim($token->callback, '/')
-            . '?token=' . \DataToken::secret($token->secret)
+            . '?token=' . DataToken::secret($token->secret)
                 ->id($user->toArray())
             . '&redirect=' . $redirect;
     }
