@@ -3,6 +3,7 @@
 namespace Attla\SSO;
 
 use Attla\DataToken\Facade as DataToken;
+use Attla\Support\Arr as AttlaArr;
 use Attla\SSO\Models\ClientProvider;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -92,7 +93,7 @@ class Resolver
 
         return rtrim($token->callback, '/')
             . '?token=' . DataToken::secret($token->secret)
-                ->id($user->toArray())
+                ->id(AttlaArr::toArray($user))
             . '&redirect=' . $redirect;
     }
 }

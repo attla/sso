@@ -16,9 +16,10 @@
     ],
     "require": {
         "php": ">=7.2.5",
-        "attla/ulid": "^1.2",
+        "attla/data-token": "dev-main",
         "attla/permission": "dev-main",
-        "attla/data-token": "dev-main"
+        "attla/support": "dev-main",
+        "attla/ulid": "^1.2"
     },
     "autoload": {
         "psr-4": {
