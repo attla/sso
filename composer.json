@@ -17,6 +17,7 @@
     "require": {
         "php": ">=7.2.5",
         "attla/data-token": "dev-main",
+        "attla/flash-messages": "dev-main",
         "attla/permission": "dev-main",
         "attla/support": "dev-main",
         "attla/ulid": "^1.2"

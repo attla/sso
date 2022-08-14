@@ -2,15 +2,23 @@
 
 namespace Attla\SSO;
 
-use Attla\DataToken\Facade as DataToken;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Attla\Support\Arr as AttlaArr;
 use Attla\SSO\Models\ClientProvider;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Attla\DataToken\Facade as DataToken;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Support\Str;
 
 class Resolver
 {
+    /**
+     * Store the config instance
+     *
+     * @var \Illuminate\Config\Repository
+     */
+    protected static $config;
+
     /**
      * Detect the provider from request
      *
@@ -64,8 +72,9 @@ class Resolver
 
         if ($clientProvider) {
             return DataToken::payload([
-                'secret' => $clientProvider->secret,
-                'callback' => $clientProvider->callback,
+                'host'      => $clientProvider->host,
+                'secret'    => $clientProvider->secret,
+                'callback'  => $clientProvider->callback,
             ])->sign(120)->encode();
         }
 
@@ -75,25 +84,103 @@ class Resolver
     /**
      * Resolve callback url
      *
-     * @param string $token
-     * @param Authenticatable $user
+     * @param string $state
+     * @param Illuminate\Contracts\Auth\Authenticatable $user
      * @return string
      */
-    public static function callback($token, Authenticatable $user, string $redirect = '')
+    public static function callback($state, Authenticatable $user, string $redirect = '')
     {
-        $token = DataToken::decode($token);
+        $state = DataToken::decode($state);
 
         if (
-            !$token
-            || empty($token->callback)
-            || empty($token->secret)
+            !$state
+            || empty($state->callback)
+            || empty($state->secret)
         ) {
             return false;
         }
 
-        return rtrim($token->callback, '/')
-            . '?token=' . DataToken::secret($token->secret)
+        return rtrim($state->callback, '/')
+            . '?state=' . DataToken::secret($state->secret)
+                ->iss($state->host)
+                ->bwr()
+                ->ip()
                 ->id(AttlaArr::toArray($user))
             . '&redirect=' . $redirect;
+    }
+
+    /**
+     * Get SSO end redirect uri
+     *
+     * @return string
+     */
+    public static function redirect($redirect = null)
+    {
+        $redirect = trim(trim((string) $redirect), '/');
+        !$redirect && $redirect = (string) static::getConfig('sso.redirect', '/');
+
+        return Route::has($route = trim(trim($redirect), '/.-'))
+            ? route($route)
+            : $redirect;
+    }
+
+    /**
+     * Detect redirect from request
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $default
+     * @return string
+     */
+    public static function getRedirectFromRequest(Request $request, $default = null)
+    {
+        return $request->redirect_uri
+            ?: $request->redirect
+            ?: $request->r
+            ?: $request->uri
+            ?: static::redirect($default);
+    }
+
+    /**
+     * Detect scope from request
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return string
+     */
+    public static function getScopeFromRequest(Request $request)
+    {
+        return $request->scope
+            ?: $request->scopes
+            ?: $request->profile
+            ?: 'default';
+    }
+
+    /**
+     * Detect state from request
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return string
+     */
+    public static function getStateFromRequest(Request $request)
+    {
+        return $request->state
+            ?: $request->token
+            ?: Resolver::getClientProviderToken($request)
+            ?: null;
+    }
+
+    /**
+     * Retrieve config value
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public static function getConfig($key = null, $default = null)
+    {
+        if (is_null(static::$config)) {
+            static::$config = config();
+        }
+
+        return static::$config->get($key, $default);
     }
 }

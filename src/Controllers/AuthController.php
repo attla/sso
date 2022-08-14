@@ -2,57 +2,60 @@
 
 namespace Attla\SSO\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use Attla\SSO\Resolver;
+use Attla\Flash\Facade as Flash;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
     public function identifier(Request $request)
     {
-        $token = Resolver::getClientProviderToken($request);
-        $redirect = $request->redirect ?: $request->r ?: route(config('sso.redirect'));
+        $state = Resolver::getClientProviderToken($request);
+        $redirect = Resolver::getRedirectFromRequest($request);
 
-        if ($user = \Auth::user()) {
-            $callback = Resolver::callback($token, $user, $redirect) ?: route(config('sso.redirect'));
+        if ($user = Auth::user()) {
+            $callback = Resolver::callback($state, $user, $redirect) ?: Resolver::redirect();
+
             return view('sso::identifier', compact(
                 'user',
-                'token',
+                'state',
                 'callback',
                 'redirect'
             ));
         }
 
-        return to_route(config('sso.route-group.as') . 'login', [
-            'token' => $token,
+        return to_route(Resolver::getConfig('sso.route-group.as') . 'login', [
+            'state' => $state,
             'redirect' => $redirect,
         ]);
     }
 
     public function login(Request $request)
     {
-        $token = $request->token;
-        $redirect = $request->redirect ?: route(config('sso.redirect'));
-        return view('sso::login', compact('token', 'redirect'));
+        $state = Resolver::getClientProviderToken($request);
+        $redirect = Resolver::getRedirectFromRequest($request);
+
+        return view('sso::login', compact('state', 'redirect'));
     }
 
     public function sign(Request $request)
     {
-        $inputs = config('sso.validation.sign');
-        $this->validate($request, $inputs);
+        $this->validate($request, $inputs = Resolver::getConfig('sso.validation.sign'));
 
-        $remember = $request->has('remember') ? 525600 : 30;
-        $token = $request->token;
-
-        if (\Auth::attempt($request->only(array_keys($inputs)), $remember)) {
-            $callback = Resolver::callback(
-                $token,
-                \Auth::user(),
-                $request->redirect ?: $request->r ?: route(config('sso.redirect'))
-            ) ?: route(config('sso.redirect'));
-
-            return redirect($callback);
+        if (
+            Auth::attempt(
+                $request->only(array_keys($inputs)),
+                $request->has('remember')
+            )
+        ) {
+            return redirect(Resolver::callback(
+                Resolver::getClientProviderToken($request),
+                Auth::user(),
+                Resolver::getRedirectFromRequest($request)
+            ) ?: Resolver::redirect());
         }
 
         return back()->withErrors('E-mail ou senha não conferem.');
@@ -60,7 +63,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        \Auth::logout();
+        Auth::logout();
 
         if ($client = Resolver::resolveClientProvider($request)) {
             return redirect($client->host);
@@ -71,25 +74,24 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $token = $request->token;
-        $redirect = $request->redirect ?: $request->r ?: route(config('sso.redirect'));
+        $state = Resolver::getClientProviderToken($request);
+        $redirect = Resolver::getRedirectFromRequest($request);
 
-        if (!$token and $token = Resolver::getClientProviderToken($request)) {
-            return to_route(config('sso.route-group.as') . 'register', [
-                'token' => $token,
+        if (!$state and $state = Resolver::getClientProviderToken($request)) {
+            return to_route(Resolver::getConfig('sso.route-group.as') . 'register', [
+                'state' => $state,
                 'redirect' => $redirect,
             ]);
         }
 
-        return view('sso::register', compact('token', 'redirect'));
+        return view('sso::register', compact('state', 'redirect'));
     }
 
     public function signup(Request $request)
     {
-        $inputs = config('sso.validation.signup');
+        $inputs = Resolver::getConfig('sso.validation.signup');
         $this->validate($request, $inputs);
 
-        $token = $request->token;
         $user = new User($request->only(array_keys($inputs)));
 
         $user->forceFill([
@@ -97,13 +99,15 @@ class AuthController extends Controller
         ]);
 
         if ($user->save()) {
-            \Auth::login($user, 525600);
+            Auth::login($user, true);
+
             $callback = Resolver::callback(
-                $token,
-                \Auth::user(),
-                $request->redirect ?: $request->r ?: route(config('sso.redirect'))
-            ) ?: route(config('sso.redirect'));
-            flash("Seja bem-vindo, {$user->name}!");
+                Resolver::getClientProviderToken($request),
+                Auth::user(),
+                Resolver::getRedirectFromRequest($request)
+            ) ?: Resolver::redirect();
+
+            Flash::info("Seja bem-vindo, {$user->name}!")->timeout(5);
 
             return redirect($callback);
         }

@@ -62,7 +62,7 @@
 							</div>
 						</form>
 						<div class="text-center">
-							<span>Não tem conta? <a href="@route(config('sso.route-group.as') . 'register', ['token' => $token, 'redirect' => $redirect])" tabindex="4">Crie grátis</a>.</span>
+							<span>Não tem conta? <a href="@route(config('sso.route-group.as') . 'register', ['state' => $state, 'redirect' => $redirect])" tabindex="4">Crie grátis</a>.</span>
 						</div>
 					</div>
 				</div>

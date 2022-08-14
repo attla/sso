@@ -44,7 +44,7 @@
                             <b class="name notranslate">{{ name($user->name) }}</b>
                         </a>
 						<div class="text-center">
-							<span>Deseja entrar com outra conta? <a href="@route(config('sso.route-group.as') . 'login', ['token' => $token, 'redirect' => $redirect])" tabindex="4">Trocar de conta</a>.</span>
+							<span>Deseja entrar com outra conta? <a href="@route(config('sso.route-group.as') . 'login', ['state' => $state, 'redirect' => $redirect])" tabindex="4">Trocar de conta</a>.</span>
 						</div>
 					</div>
 				</div>

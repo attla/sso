@@ -69,7 +69,7 @@
 							</div>
 						</form>
 						<div class="text-center">
-							<span>Já possui conta? <a href="@route(config('sso.route-group.as') . 'login', ['token' => $token, 'redirect' => $redirect])">Acesse sua conta</a>.</span>
+							<span>Já possui conta? <a href="@route(config('sso.route-group.as') . 'login', ['state' => $state, 'redirect' => $redirect])">Acesse sua conta</a>.</span>
 						</div>
 					</div>
 				</div>
