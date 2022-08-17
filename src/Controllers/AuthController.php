@@ -17,7 +17,7 @@ class AuthController extends Controller
         $redirect = Resolver::getRedirectFromRequest($request);
 
         if ($user = Auth::user()) {
-            $callback = Resolver::callback($state, $user, $redirect) ?: Resolver::redirect();
+            $callback = Resolver::callback($state, $user, $redirect);
 
             return view('sso::identifier', compact(
                 'user',
@@ -55,7 +55,7 @@ class AuthController extends Controller
                 Resolver::getClientProviderToken($request),
                 Auth::user(),
                 Resolver::getRedirectFromRequest($request)
-            ) ?: Resolver::redirect());
+            ));
         }
 
         return back()->withErrors('E-mail ou senha não conferem.');
@@ -95,21 +95,19 @@ class AuthController extends Controller
         $user = new User($request->only(array_keys($inputs)));
 
         $user->forceFill([
-            'password' => encrypt($request->input('password')),
+            'password' => bcrypt($request->input('password')),
         ]);
 
         if ($user->save()) {
             Auth::login($user, true);
 
-            $callback = Resolver::callback(
+            Flash::info("Seja bem-vindo, {$user->name}!")->timeout(5);
+
+            return redirect(Resolver::callback(
                 Resolver::getClientProviderToken($request),
                 Auth::user(),
                 Resolver::getRedirectFromRequest($request)
-            ) ?: Resolver::redirect();
-
-            Flash::info("Seja bem-vindo, {$user->name}!")->timeout(5);
-
-            return redirect($callback);
+            ));
         }
 
         return back()->withErrors('Occorreu um erro ao efetuar o cadastro.');
