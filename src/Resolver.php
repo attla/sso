@@ -22,11 +22,16 @@ class Resolver
     /**
      * Detect the provider from request
      *
+     * @param \Illuminate\Http\Request $request
      * @return ClientProvider|false
      */
     public static function resolveClientProvider(Request $request)
     {
-        $clientHost = static::host($request->client ?: $request->header('referer'));
+        $clientHost = static::host(
+            $request->client_id
+            ?: $request->client
+            ?: $request->header('referer')
+        );
 
         if (
             $clientHost
@@ -64,6 +69,7 @@ class Resolver
     /**
      * Get client provider token
      *
+     * @param \Illuminate\Http\Request $request
      * @return string|false
      */
     public static function getClientProviderToken(Request $request)
@@ -75,7 +81,8 @@ class Resolver
                 'host'      => $clientProvider->host,
                 'secret'    => $clientProvider->secret,
                 'callback'  => $clientProvider->callback,
-            ])->sign(120)->encode();
+            ])->sign(120)
+            ->encode();
         }
 
         return null;
@@ -85,7 +92,7 @@ class Resolver
      * Resolve callback url
      *
      * @param string $state
-     * @param Illuminate\Contracts\Auth\Authenticatable $user
+     * @param \Illuminate\Contracts\Auth\Authenticatable $user
      * @return string
      */
     public static function callback($state, Authenticatable $user, string $redirect = '')
@@ -97,7 +104,7 @@ class Resolver
             || empty($state->callback)
             || empty($state->secret)
         ) {
-            return false;
+            return static::redirect();
         }
 
         return rtrim($state->callback, '/')
@@ -112,6 +119,7 @@ class Resolver
     /**
      * Get SSO end redirect uri
      *
+     * @param string $redirect
      * @return string
      */
     public static function redirect($redirect = null)
