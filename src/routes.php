@@ -16,7 +16,7 @@ app('router')->group($config->get('sso.route-group', [
         'web',
     ],
 ]), function () use ($router, $config) {
-    $routeUri = $config->get('sso.route-uri');
+    $routeUri = $config->get('sso.route');
     $middlewares = $config->get('sso.middlewares');
 
     foreach ($routeUri ?: [] as $name => $path) {

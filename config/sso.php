@@ -3,7 +3,9 @@
 use Illuminate\Validation\Rules\Password;
 
 return [
-    'route-uri' => [
+
+    // Endpoints URI
+    'route' => [
         // identifies if the user is logged in and handles the return
         'identifier'    => 'identifier',
         // login page
@@ -13,7 +15,11 @@ return [
         // logout route
         'logout'        => 'logout',
     ],
+
+    // Endpoint URI or route name to be redirected after authentication
     'redirect'          => 'dashboard',
+
+    // Route group configuration
     'route-group' => [
         'as'            => 'sso.',
         'prefix'        => '/sso',
@@ -23,6 +29,8 @@ return [
             'web',
         ],
     ],
+
+    // URI aliases for redirect to sso routes
     'route-alias' => [
         'identifier'    => [
             // 'alias-uri',
@@ -31,6 +39,8 @@ return [
         'register'      => [],
         'logout'        => [],
     ],
+
+    // Routes middlewares
     'middlewares' => [
         'identifier' => [
             //
@@ -45,6 +55,8 @@ return [
             //
         ],
     ],
+
+    // Validation rules
     'validation' => [
         'sign' => [
             'email'     => 'required|email',
