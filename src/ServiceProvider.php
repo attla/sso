@@ -110,7 +110,7 @@ class ServiceProvider extends BaseServiceProvider
             ],
         ]), function () {
             $routes = Resolver::getConfig('sso.route') ?: [];
-            $middlewares = Resolver::getConfig('sso.middlewares');
+            $middlewares = Resolver::getConfig('sso.middlewares') ?: [];
 
 
             foreach ($routes as $name => $path) {
