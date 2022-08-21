@@ -31,7 +31,6 @@ class Resolver
 
         if (
             $clientHost
-            and $clientHost != $_SERVER['HTTP_HOST']
             and $clientProvider = ClientProvider::where('host', $clientHost)->first()
         ) {
             return $clientProvider;
@@ -136,11 +135,15 @@ class Resolver
      */
     public static function getClientFromRequest(Request $request)
     {
-        return static::host(
+        $client = static::host(
             $request->client_id
             ?: $request->client
             ?: $request->header('referer')
         );
+
+        $client == $_SERVER['HTTP_HOST'] && $client = null;
+
+        return $client;
     }
 
     /**
