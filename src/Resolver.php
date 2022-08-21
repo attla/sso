@@ -27,11 +27,7 @@ class Resolver
      */
     public static function resolveClientProvider(Request $request)
     {
-        $clientHost = static::host(
-            $request->client_id
-            ?: $request->client
-            ?: $request->header('referer')
-        );
+        $clientHost = static::getClientFromRequest($request);
 
         if (
             $clientHost
@@ -133,6 +129,21 @@ class Resolver
     }
 
     /**
+     * Detect client_id from request
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return string|null
+     */
+    public static function getClientFromRequest(Request $request)
+    {
+        return static::host(
+            $request->client_id
+            ?: $request->client
+            ?: $request->header('referer')
+        );
+    }
+
+    /**
      * Detect redirect from request
      *
      * @param \Illuminate\Http\Request $request
@@ -166,7 +177,7 @@ class Resolver
      * Detect state from request
      *
      * @param \Illuminate\Http\Request $request
-     * @return string
+     * @return string|null
      */
     public static function getStateFromRequest(Request $request)
     {
