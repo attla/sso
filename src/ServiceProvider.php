@@ -64,7 +64,10 @@ class ServiceProvider extends BaseServiceProvider
         $this->publishes([
             $migrationsPath => $this->app->databasePath('migrations'),
         ], 'attla/sso/migrations');
-        $this->loadMigrationsFrom($migrationsPath);
+
+        if (!is_file($this->app->databasePath('migrations/2021_04_24_000000_create_users_table.php'))) {
+            $this->loadMigrationsFrom($migrationsPath);
+        }
     }
 
     /**
