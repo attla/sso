@@ -72,12 +72,12 @@ class Resolver
         $clientProvider = static::resolveClientProvider($request);
 
         if ($clientProvider) {
-            return DataToken::payload([
-                'host'      => $clientProvider->host,
-                'secret'    => $clientProvider->secret,
-                'callback'  => $clientProvider->callback,
-            ])->sign(120)
-            ->encode();
+            return DataToken::iss()
+                ->id([
+                    'host'      => $clientProvider->host,
+                    'secret'    => $clientProvider->secret,
+                    'callback'  => $clientProvider->callback,
+                ]);
         }
 
         return null;
