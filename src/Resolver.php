@@ -92,12 +92,11 @@ class Resolver
      */
     public static function callback($state, Authenticatable $user, string $redirect = '')
     {
-        $state = DataToken::decode($state);
-
         if (
-            !$state
+            (is_string($state) && !is_object($state = DataToken::decode($state)))
             || empty($state->callback)
             || empty($state->secret)
+            || empty($state->host)
         ) {
             return static::redirect();
         }
